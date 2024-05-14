@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 import torch
 from matplotlib.figure import Figure
-from sklearn.base import ClassifierMixin
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import PartialDependenceDisplay
@@ -91,10 +90,11 @@ class Evaluator(BaseEvaluator):
         model: BaseModel,
         X: pd.DataFrame,
         y: np.ndarray,
+        device: Optional[str] = None
     ) -> None:
         self.model = model
         self._assert_model_has_proper_methods()
-
+        self.device = device
         self.X = X
         self.y = y
         self._assert_y_has_proper_type()
@@ -136,6 +136,8 @@ class Evaluator(BaseEvaluator):
         proba = self.model.predict_proba(self.X)
 
         if isinstance(proba, torch.Tensor):
+            if self.device:
+                proba = proba.cpu()
             return proba.numpy().reshape(-1)
 
         else:
@@ -168,7 +170,7 @@ class Evaluator(BaseEvaluator):
         return auc(recall, precision)
 
     def get_all_metrics(
-        self, to_mlflow: bool = False, epoch: int | None = None
+        self, to_mlflow: bool = False, epoch: Optional[int] = None
     ) -> Metrics:
         metrics = Metrics(
             accuracy=self.get_accuracy(),
@@ -185,7 +187,7 @@ class Evaluator(BaseEvaluator):
 
         return metrics
 
-    def plot_roc_curve(self, save_path: Path | None = None) -> Figure:
+    def plot_roc_curve(self, save_path: Optional[Path] = None) -> Figure:
         fpr, tpr, thresholds = roc_curve(y_true=self.y, y_score=self.proba)
         auc_score = auc(fpr, tpr)
 

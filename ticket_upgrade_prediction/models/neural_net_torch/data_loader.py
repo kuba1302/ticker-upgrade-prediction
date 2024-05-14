@@ -13,7 +13,7 @@ class UpgradeDataset(Dataset):
         self,
         X: pd.DataFrame,
         y: ArrayLike,
-        scaler_class: type[TransformerMixin] = StandardScaler,
+        scaler_class: TransformerMixin = StandardScaler,
     ) -> None:
         self.X = X.values
         self.y = np.array(y).reshape(-1, 1)

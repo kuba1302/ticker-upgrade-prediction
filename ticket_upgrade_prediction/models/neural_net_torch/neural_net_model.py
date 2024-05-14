@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 import torch.nn as nn
-
+from typing import List
 from ticket_upgrade_prediction.models import BaseModel
 
 
@@ -18,8 +18,9 @@ class LinearReluModule(nn.Module):
 
 class Network(nn.Module, BaseModel):
     def __init__(
-        self, input_size: int, hidden_layers_sizes: list[int]
+        self, input_size: int, hidden_layers_sizes: List[int], device: str = None
     ) -> None:
+        self.device = device
         super().__init__()
         self.hidden_layers_sizes = hidden_layers_sizes
         self.layers = nn.Sequential(
@@ -45,11 +46,15 @@ class Network(nn.Module, BaseModel):
 
     def predict_proba(self, X: pd.DataFrame) -> torch.Tensor:
         X_tensor = torch.from_numpy(X.values)
+        if self.device:
+            X_tensor = X_tensor.to(self.device)
+            
         network = nn.Sequential(self.layers, nn.Sigmoid())
         return network(X_tensor.float())
 
     def predict(self, X, threshold: float = 0.5):
         proba = self.predict_proba(X=X)
+        proba = proba.cpu()
         return torch.where(proba >= threshold, 1, 0).numpy()
 
     def fit_model(self, **kwargs):

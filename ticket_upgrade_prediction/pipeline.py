@@ -420,11 +420,12 @@ class Pipeline:
 if __name__ == "__main__":
     data_path = Path(__file__).parents[1] / "data" / "raw_data"
     d = Pipeline(model_type="predict_upgrade", data_path=data_path)
-    d.concat_df_with_oh_encoding()
-    save_path_csv = data_path.parents[0] / "dataset.csv"
-    d.df.to_csv(save_path_csv, index=False)
+    # d.concat_df_with_oh_encoding()
+    # d.df = pd.read_csv(data_path).drop(columns="Unnamed: 0")
+    # save_path_csv = data_path.parents[0] / "dataset.csv"
+    # d.df.to_csv(save_path_csv, index=False)
     # this is how you access df if you need it for k-fold, plain df without splitting
-    # save_path = data_path.parents[0] / "dataset.pickle"
-    # dataset_split_sets = (
-    #     d.scale_final_dataset(save_path=save_path),
-    # )  # this is how you access df if you don't do kfold cross-validation
+    save_path = data_path.parents[0] / "dataset.pickle"
+    dataset_split_sets = (
+        d.scale_final_dataset(save_path=save_path),
+    )  # this is how you access df if you don't do kfold cross-validation
