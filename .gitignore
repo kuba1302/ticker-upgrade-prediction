@@ -149,6 +149,10 @@ data/KMO_TEAM_FCP_test_results_example8.csv
 data/KMO_TEAM_FCP_test_results_example9.csv
 data/WEC_Hackathon_Lot_Case.pdf
 
+ticket_upgrade_prediction/models/WEC2022_Data
+ticket_upgrade_prediction/models/xgboost/pipeline.py
+ticket_upgrade_prediction/models/xgboost/evaluator.py
+
 .vscode
 .env
 mlruns/*
